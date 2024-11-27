@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: progress-cards
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    env: static
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
