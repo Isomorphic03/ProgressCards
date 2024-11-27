@@ -10,7 +10,7 @@ import { StudyCategory } from './types';
 export default function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { entries, addEntry, deleteEntry, getStats } = useStudyData();
-  const { weeklyHours, monthlyHours } = getStats();
+  const { weeklyHours, monthlyHours, totalHours } = getStats();
 
   const handleAddHours = (category: StudyCategory, hours: number) => {
     addEntry(selectedDate, category, hours);
@@ -40,7 +40,11 @@ export default function App() {
               />
             </div>
             <div style={{ backgroundColor: 'var(--card)', padding: '1.5rem', borderRadius: '0.5rem' }}>
-              <Stats weeklyHours={weeklyHours} monthlyHours={monthlyHours} />
+              <Stats 
+                weeklyHours={weeklyHours} 
+                monthlyHours={monthlyHours}
+                totalHours={totalHours}
+              />
             </div>
           </div>
           <div style={{ backgroundColor: 'var(--card)', padding: '1.5rem', borderRadius: '0.5rem' }}>

@@ -11,6 +11,14 @@ export interface StudyEntry {
   hours: StudyHours[];
 }
 
+export interface ProgressTotals {
+  id?: string;
+  weeklyTotals: Record<StudyCategory, number>;
+  monthlyTotals: Record<StudyCategory, number>;
+  totalHours: Record<StudyCategory, number>;
+  lastUpdated: Timestamp;
+}
+
 export const CATEGORIES: Record<StudyCategory, { color: string; label: string }> = {
   productive: { color: 'emerald', label: 'Maths' },
   creative: { color: 'blue', label: 'Productive' },

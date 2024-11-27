@@ -60,43 +60,31 @@ export function useStudyData() {
         return acc;
       }, {} as Record<StudyCategory, number>);
 
+    const totalHours = entries.reduce((acc, entry) => {
+      entry.hours.forEach(({ category, hours }) => {
+        acc[category] = (acc[category] || 0) + hours;
+      });
+      return acc;
+    }, {} as Record<StudyCategory, number>);
+
     // Update Firebase with new totals
     updateProgressTotals({
       weeklyTotals: weeklyHours,
       monthlyTotals: monthlyHours,
+      totalHours: totalHours,
       lastUpdated: Timestamp.now()
     }).catch(error => {
       console.error('Error updating progress totals:', error);
     });
   }, [entries]);
 
-  const addEntry = async (date: Date, category: StudyCategory, hours: number) => {
-    const dateStr = format(date, 'yyyy-MM-dd');
-    
-    try {
-      await addStudyEntry({
-        date: dateStr,
-        hours: [{ category, hours }]
-      });
-    } catch (error) {
-      console.error('Error adding entry:', error);
-    }
-  };
-
-  const deleteEntry = async (entryId: string, hourIndex: number) => {
-    try {
-      await deleteStudyHour(entryId, hourIndex);
-    } catch (error) {
-      console.error('Error deleting entry:', error);
-    }
-  };
-
   const getStats = () => {
     // Return the stored totals from Firebase if available, otherwise calculate from entries
     if (progressTotals) {
       return {
         weeklyHours: progressTotals.weeklyTotals,
-        monthlyHours: progressTotals.monthlyTotals
+        monthlyHours: progressTotals.monthlyTotals,
+        totalHours: progressTotals.totalHours
       };
     }
 
@@ -126,7 +114,35 @@ export function useStudyData() {
         return acc;
       }, {} as Record<StudyCategory, number>);
 
-    return { weeklyHours, monthlyHours };
+    const totalHours = entries.reduce((acc, entry) => {
+      entry.hours.forEach(({ category, hours }) => {
+        acc[category] = (acc[category] || 0) + hours;
+      });
+      return acc;
+    }, {} as Record<StudyCategory, number>);
+
+    return { weeklyHours, monthlyHours, totalHours };
+  };
+
+  const addEntry = async (date: Date, category: StudyCategory, hours: number) => {
+    const dateStr = format(startOfDay(date), 'yyyy-MM-dd');
+    
+    try {
+      await addStudyEntry({
+        date: dateStr,
+        hours: [{ category, hours }]
+      });
+    } catch (error) {
+      console.error('Error adding entry:', error);
+    }
+  };
+
+  const deleteEntry = async (entryId: string, hourIndex: number) => {
+    try {
+      await deleteStudyHour(entryId, hourIndex);
+    } catch (error) {
+      console.error('Error deleting entry:', error);
+    }
   };
 
   return { entries, addEntry, deleteEntry, getStats, progressTotals };
